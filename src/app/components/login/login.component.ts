@@ -16,7 +16,7 @@ export class LoginComponent {
     private service: AuthService,
     private router: Router
   ) {
-    sessionStorage.clear();
+    localStorage.clear();
   }
 
   result: any;

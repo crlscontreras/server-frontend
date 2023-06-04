@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpResponse } from '@angular/common/http';
-import { map } from 'rxjs';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+  HttpResponse,
+} from '@angular/common/http';
+import { catchError, concatMap, map, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -31,15 +36,37 @@ export class AuthService {
           const body = response.body;
 
           const bearerToken = body['access_token'];
+          const refreshToken = body['refresh_token'];
           localStorage.setItem('token', bearerToken);
+          localStorage.setItem('refreshToken', refreshToken);
 
           return body;
         })
       );
   }
 
+  refreshToken(inputdata: any) {
+    let headers = new HttpHeaders({
+      Authorization: `Bearer ${inputdata}`,
+      skip: 'true',
+    });
+
+    console.log('Need to refresh Token', headers.getAll('Authorization'));
+    return this.http.post(
+      this.apiurl + 'auth/refresh-token',
+      {},
+      {
+        headers: headers,
+      }
+    );
+  }
+
   getToken() {
     return localStorage.getItem('token');
+  }
+
+  getRefreshToken() {
+    return localStorage.getItem('refreshToken');
   }
 
   GetUserbyCode(id: any) {
